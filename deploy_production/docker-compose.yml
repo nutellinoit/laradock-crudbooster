@@ -1,0 +1,131 @@
+version: '2'
+
+services:
+
+### Applications Code Container #############################
+
+    applications:
+      image: nutellinoit/laradock-crudbooster-application:1.0
+      volumes:
+          - application_volume:/var/www
+
+### Workspace Utilities Container ###########################
+
+    workspace:
+      restart: always
+      image: nutellinoit/laradock-crudbooster-workspace:1.0
+      volumes_from:
+        - applications
+      #volumes:
+        #- /etc/localtime:/etc/localtime:ro
+        #- /etc/timezone:/etc/timezone:ro
+      tty: true
+      networks:
+        - frontend
+        - backend
+
+### PHP-FPM Container #######################################
+
+    php-fpm:
+      restart: always
+      image: nutellinoit/laradock-crudbooster-php-fpm:1.0
+      volumes_from:
+        - applications
+      #volumes:
+        #- /etc/localtime:/etc/localtime:ro
+        #- /etc/timezone:/etc/timezone:ro
+      expose:
+        - "9000"
+      depends_on:
+        - workspace
+      environment:
+        - PHP_IDE_CONFIG=${PHP_IDE_CONFIG}
+      networks:
+        - backend
+
+### Redis Container #########################################
+
+    redis:
+      image: nutellinoit/laradock-crudbooster-redis:1.0
+      volumes:
+        - ${DATA_SAVE_PATH}/redis:/data
+        #- /etc/localtime:/etc/localtime:ro
+        #- /etc/timezone:/etc/timezone:ro
+      #ports:
+      #  - "${REDIS_PORT}:6379"
+      networks:
+        - backend
+
+### NGINX Server Container ##################################
+
+    nginx:
+      restart: always
+      image: nutellinoit/laradock-crudbooster-nginx:1.0
+      volumes_from:
+        - applications
+      volumes:
+        - ${NGINX_HOST_LOG_PATH}:/var/log/nginx
+        #- /etc/localtime:/etc/localtime:ro
+        #- /etc/timezone:/etc/timezone:ro
+      ports:
+        - "${NGINX_HOST_HTTP_PORT}:80"
+        - "${NGINX_HOST_HTTPS_PORT}:443"
+      depends_on:
+        - php-fpm
+      networks:
+        - frontend
+        - backend
+
+
+
+### Percona Container #########################################
+
+    percona:
+      restart: always
+      image: nutellinoit/laradock-crudbooster-percona:1.0
+      environment:
+        - MYSQL_DATABASE=${PERCONA_DATABASE}
+        - MYSQL_USER=${PERCONA_USER}
+        - MYSQL_PASSWORD=${PERCONA_PASSWORD}
+        - MYSQL_ROOT_PASSWORD=${PERCONA_ROOT_PASSWORD}
+      volumes:
+        - ${DATA_SAVE_PATH}/percona:/var/lib/mysql
+        #- /etc/localtime:/etc/localtime:ro
+        #- /etc/timezone:/etc/timezone:ro
+      #ports:
+      #  - "${PERCONA_PORT}:3306"
+      networks:
+        - backend
+
+### Mysql Backup Sidecar Container #########################################
+
+    sidecar-backup-mysql:
+      image: nutellinoit/sidecar-backup-mysql:1.0
+      volumes:
+          - ./production_dump:/go/src/app/dumpdb
+      restart: always
+      environment:
+        - MYSQL_HOST=percona
+        - MYSQL_DATABASE=${PERCONA_DATABASE}
+        - MYSQL_USER=${PERCONA_USER}
+        - MYSQL_PASSWORD=${PERCONA_PASSWORD}
+        - MYSQL_SQL_FILENAME=fabkeybackup
+        - SCHEDULE=0 0 0 * * *  # Backup a mezzanotte
+      networks:
+        - backend
+
+
+### Networks Setup ############################################
+
+networks:
+  frontend:
+    driver: "bridge"
+  backend:
+    driver: "bridge"
+
+### Volumes Setup #############################################
+
+volumes:
+  application_volume:
+  percona:
+    driver: "local"
