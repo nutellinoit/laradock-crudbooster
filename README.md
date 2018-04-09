@@ -1,38 +1,41 @@
 # Laradock + Crudbooster
 
-## Come installare
+## How to install
 
-Avviare la soluzione, posizionarsi nella cartella ```laradock``` e lanciare
+Start the solution, go to the ```laradock``` folder and launch
 
 ```bash
 docker-compose up -d
 ```
 
-questo comando avvia tutti i container e crea la cartella /crm nella root del progetto
+this command starts all the containers and creates the / crm folder in the project root
 
-Entrare nel container di supporto, workspace, per eseguire tutti i vari comandi di composer
+Enter the support container, workspace, to run all the various composer commands
 
 ```bash
 docker-compose exec --user=laradock workspace bash
 ```
 
-Installare laravel
+
+Install laravel
 
 ```bash
 composer create-project laravel/laravel .
-``` 
+```
 
 ```bash
 composer require crocodicstudio/crudbooster
 ```
 
-Aggiungere la seguente classe ai providers nel file,  **config/app.php**
+
+Add the following class to the providers in the file, **config/app.php**
 
 ```php
 crocodicstudio\crudbooster\CRUDBoosterServiceProvider::class,
 ```
 
-Impostare i setting del database nel file ```crm/.env``` in questo modo (per connetterlo direttamente al container percona appena creato)
+
+Set the database settings in the ```crm/.env``` file in this way (to connect it directly to the newly created percona container)
 
 ```
 DB_CONNECTION=mysql
@@ -43,12 +46,12 @@ DB_USERNAME=homestead
 DB_PASSWORD=secret
 ```
 
-Lanciare l'install di crudbooster
+Launch the crudbooster install
 ```bash
 php artisan crudbooster:install
 ```
 
-Vi verrà chiesto se avete impostato le credenziali db, date "yes"
+You will be asked if you have set up your credentials db, date "yes"
 
 ```bash
 
@@ -80,7 +83,7 @@ I remove some default migration files from laravel...
  > yes
 ```
 
-Poi vi chiederà che tipo di installazione fare, dategli il comando 0
+Then he will ask you what kind of installation to do, give him the command 0
 
 ```bash
 
@@ -115,7 +118,7 @@ Publishing CRUDBooster needs file...
 ```
 
 
-## Credenziali di default
+## Credentials di default
 ```php
 /admin/login
 ```
@@ -123,9 +126,10 @@ Publishing CRUDBooster needs file...
 - default password : 123456
 
 
-## Come aggiornare
+## How to update
 
-Aprire il terminale.
+
+Open the terminal.
 ```bash
 composer require crocodicstudio/crudbooster
 ```
@@ -134,7 +138,7 @@ composer require crocodicstudio/crudbooster
 php artisan crudbooster:update
 ```
 
-## Se si è spaccato qualcosa di crudbooster:
+## If something has been broken crudbooster:
 
 ```bash
 php artisan crudbooster:update

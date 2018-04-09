@@ -1,18 +1,18 @@
 # Info sulle migration
 
-In laravel le tabelle di database si definiscono tramite le migration
+In laravel, database tables are defined by migration
 
 ```bash
-php artisan make:migration nome_migration --create=nome_tabella
+php artisan make:migration name_migration --create=table_name
 ```
 
-Modificare la migration appena creata e applicarla con:
+Modify the newly created migration and apply it with:
 
 ```bash
 php artisan migrate
 ```
 
-se si spacca crudbooster
+if it breaks crudbooster
 
 ```bash
 php artisan crudbooster:update
