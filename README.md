@@ -51,7 +51,7 @@ Launch the crudbooster install
 php artisan crudbooster:install
 ```
 
-You will be asked if you have set up your credentials db, date "yes"
+You will be asked if you have set up your credentials db, type "yes"
 
 ```bash
 
